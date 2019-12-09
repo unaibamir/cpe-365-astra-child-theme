@@ -54,6 +54,8 @@ function woo_pmp_level_add_cpe_fields()
     $cpe_credits    = get_pmpro_membership_level_meta($level_id, "cpe_credits", true);
     $cpe_term       =   get_option( "cpe_term", "CPE" );
     ?>
+
+    <h3 class="topborder">CPE Credits Settings</h3>
     <table class="form-table">
         <tbody>
             <tr>
