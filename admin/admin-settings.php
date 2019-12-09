@@ -16,8 +16,8 @@ function wooninjas_cpe_settings_menu() {
 
 function wooninjas_cpe_settings_menu_callback() {
 
-
-	$billing_info = get_option( "cpe_billing_info", "" );
+	$billing_info 	= get_option( "cpe_billing_info", "" );
+	$cpe_term 		= get_option( "cpe_term", "CPE" );
 
 	?>
 	<div class="wrap">
@@ -42,6 +42,13 @@ function wooninjas_cpe_settings_menu_callback() {
 							</div>
 						</td>
 					</tr>
+
+					<tr>
+						<th><?php _e("CPE Term", CPE_LANG); ?></th>
+						<td>
+							<input type="text" name="cpe_term" class="regular-text" value="<?php echo $cpe_term; ?>">
+						</td>
+					</tr>
 				</tbody>
 			</table>
 
@@ -58,7 +65,9 @@ function wooninjas_cpe_settings_menu_callback() {
 add_action( "admin_post_cpe_admin_settings", "save_cpe_admin_settings" );
 function save_cpe_admin_settings() {
 	if( isset($_POST["action"]) && $_POST["action"] == "cpe_admin_settings" ) {
+
 		update_option( "cpe_billing_info", $_POST["cpe_billing_info"], false );
+		update_option( "cpe_term", $_POST["cpe_term"], false );
 		
 		$redirect_url = $_POST["_wp_http_referer"];
 		$redirect_url = add_query_arg("setting-updated" , "true", $redirect_url);

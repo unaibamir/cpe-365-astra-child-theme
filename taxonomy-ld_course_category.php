@@ -7,6 +7,7 @@ $lists_url = add_query_arg("list_style", "list");
 $grids_url = add_query_arg("list_style", "grid");
 add_filter('excerpt_more', '__return_empty_string');
 $user_id = get_current_user_id();
+$cpe_term       =   get_option( "cpe_term", "CPE" );
 
 get_header();
 
@@ -101,7 +102,7 @@ get_header();
 														</h3>
 													<?php endif; ?>
 													<h3>
-														<span>CPE:</span> <?php echo $course_cpe; ?>
+														<span><?php echo $cpe_term ?>:</span> <?php echo $course_cpe; ?>
 													</h3>
 
 
@@ -147,7 +148,7 @@ get_header();
 												<span id="tooltip_content_<?php echo $course_id; ?>">
 													<?php echo wpautop(get_the_excerpt()); ?>
 													<p><b>Field of Study: </b><?php single_cat_title(); ?></p>
-													<p><b>CPE Hours: </b>3.0</p>
+													<p><b><?php echo $cpe_term; ?> Hours: </b>3.0</p>
 												</span>
 											</div>
 										</article><!-- #post-## -->
@@ -171,7 +172,7 @@ get_header();
 									<thead>
 										<tr>
 											<th class="ast-col-lg-7">Course Name</th>
-											<th>PDU</th>
+											<th><?php echo $cpe_term; ?></th>
 											<th>Price</th>
 											<th>Select</th>
 										</tr>
@@ -180,13 +181,12 @@ get_header();
 										<?php while (have_posts()) : the_post(); ?>
 
 											<?php
-											$course_id = get_the_ID();
-											$course_settings = learndash_get_setting($course_id);
-											//dd($course_settings);
-											$course_price 	= !empty(@$course_settings["course_price"]) ? $course_settings["course_price"] : "0.00";
-											$course_cpe 	= get_post_meta($course_id, "_learndash_course_cpe_credits", true);
-											$course_details = get_post_meta($course_id, "_learndash_course_grid_short_description", true);
-											$course_cpe 	= !empty($course_cpe) ? $course_cpe : "0.00";
+											$course_id 			= get_the_ID();
+											$course_settings 	= learndash_get_setting($course_id);
+											$course_price 		= !empty(@$course_settings["course_price"]) ? $course_settings["course_price"] : "0.00";
+											$course_cpe 		= get_post_meta($course_id, "_learndash_course_cpe_credits", true);
+											$course_details 	= get_post_meta($course_id, "_learndash_course_grid_short_description", true);
+											$course_cpe 		= !empty($course_cpe) ? $course_cpe : "0.00";
 											?>
 
 											<tr id="course-<?php echo $course_id; ?>">
@@ -199,7 +199,7 @@ get_header();
 														<span id="tooltip_content_<?php echo $course_id; ?>">
 															<?php echo wpautop($course_details); ?>
 															<p><b>Field of Study: </b><?php single_cat_title(); ?></p>
-															<p><b>PDU Hours: </b><?php echo $course_cpe; ?></p>
+															<p><b><?php echo $cpe_term; ?> Hours: </b><?php echo $course_cpe; ?></p>
 														</span>
 													</div>
 												</td>

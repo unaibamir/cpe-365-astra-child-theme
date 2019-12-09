@@ -31,10 +31,11 @@
  * @package LearnDash\Course
  */
 
-$course_content = get_the_content($course_id);
-$has_lesson_quizzes = learndash_30_has_lesson_quizzes($course_id, $lessons);
-$course_has_plans = get_course_plans($course_id, true);
-$course_plans = get_course_plans($course_id);
+$course_content 		= get_the_content($course_id);
+$has_lesson_quizzes 	= learndash_30_has_lesson_quizzes($course_id, $lessons);
+$course_has_plans 		= get_course_plans($course_id, true);
+$course_plans 			= get_course_plans($course_id);
+
 ?>
 
 <div class="<?php echo esc_attr(learndash_the_wrapper_class()); ?> <?php echo $course_has_plans && !$has_access ? "course-has-plans" : "" ?>">

@@ -40,6 +40,7 @@ require_once CPE_DIR . "shortcodes/cpe_user_certificates.php";
 require_once CPE_DIR . "shortcodes/cpe_user_completed_courses.php";
 require_once CPE_DIR . "shortcodes/cpe_user_in_progress_courses.php";
 require_once CPE_DIR . "shortcodes/cpe_user_profile.php";
+require_once CPE_DIR . "paid-memberships-pro/user-credits.php";
 
 
 add_action('after_setup_theme', 'cpe_theme_after_setup');
@@ -173,6 +174,7 @@ function learndash_course_extras_output_meta_box($args)
     $post           = get_post($post_id);
     $instructor     = get_post_meta($post_id, '_learndash_course_instructor', true);
     $cpe_credits    = get_post_meta($post_id, '_learndash_course_cpe_credits', true);
+    $cpe_term       = get_option( "cpe_term", "CPE" );
 
     wp_nonce_field('learndash_course_extra_save', 'learndash_course_extra_nonce');
     ?>
@@ -180,14 +182,14 @@ function learndash_course_extras_output_meta_box($args)
     <div class="sfwd_input">
         <span class="sfwd_option_label" style="text-align:right;vertical-align:top;">
             <a class="sfwd_help_text_link" style="cursor:pointer;" title="Click for Help!" onclick="toggleVisibility('learndash_course_cpe_text');"><img src="<?php echo LEARNDASH_LMS_PLUGIN_URL . 'assets/images/question.png' ?>">
-                <label class="sfwd_label textinput"><?php _e('PDU Credits', 'learndash-course-grid'); ?></label></a>
+                <label class="sfwd_label textinput"><?php _e($cpe_term . ' Credits', 'learndash-course-grid'); ?></label></a>
         </span>
         <span class="sfwd_option_input">
             <div class="sfwd_option_div">
                 <input name="learndash_course_cpe_credits" type="text" value="<?php echo esc_attr($cpe_credits); ?>"></textarea>
             </div>
             <div class="sfwd_help_text_div" style="display:none" id="learndash_course_cpe_text">
-                <label class="sfwd_help_text"><?php _e('Use this field to change the PDU credits value.', 'learndash-course-grid'); ?>
+                <label class="sfwd_help_text"><?php _e('Use this field to change the '.$cpe_term.' credits value.', 'learndash-course-grid'); ?>
                 </label>
             </div>
         </span>
@@ -531,59 +533,6 @@ function unaib_filter_ld_focus_mode_template($template){
 
     return $template;
 }
-
-add_action("admin_post_cpe_update_user_profile", "cpe_update_user_profile_callbak");
-function cpe_update_user_profile_callbak()
-{
-
-    $user_cpe_values = array();
-
-    if (isset($_POST["action"]) && $_POST["action"] == "cpe_update_user_profile") {
-        $counter = 0;
-
-        $field_types = array("cpa", "ea", "asfr", "cfp");
-        $user_input = $_POST["user_credentials"];
-
-        foreach ($field_types as $type) {
-            $user_cpe_values[$type]["checked"] = isset($user_input["type"][$type]) ? $user_input["type"][$type] : "no";
-            $user_cpe_values[$type]["value"] = isset($user_input["value"]["{$type}_value"]) ? $user_input["value"]["{$type}_value"] : "" ;
-        }
-        
-        update_user_meta($_POST['user_id'], "_cpe_values", $user_cpe_values, '');
-
-        wp_safe_redirect($_POST["_wp_http_referer"]);
-        exit;
-    }
-}
-
-
-
-add_action("pmpro_membership_level_after_other_settings", "woo_pmp_level_add_cpe_fields");
-function woo_pmp_level_add_cpe_fields()
-{
-    $level_id = $_REQUEST['edit'];
-    $cpe_credits = get_pmpro_membership_level_meta($level_id, "cpe_credits", true);
-    ?>
-    <table class="form-table">
-        <tbody>
-            <tr>
-                <th scope="row" valign="top"><label><?php _e('PDU Credits', CPE_LANG);?>:</label></th>
-                <td>
-                    <input type="number" name="cpe_credits" value="<?php echo $cpe_credits; ?>" min="0" class="small-text">
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <?php
-}
-
-add_action('pmpro_save_membership_level', 'woo_pmp_level_save_cpe_fields');
-function woo_pmp_level_save_cpe_fields($level_id)
-{
-    $cpe_credits = sanitize_text_field($_POST["cpe_credits"], "");
-    update_pmpro_membership_level_meta($level_id, 'cpe_credits', $cpe_credits);
-}
-
 
 
 /**

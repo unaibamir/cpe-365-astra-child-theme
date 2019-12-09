@@ -101,14 +101,29 @@ function cpe_user_available_courses($atts) {
     $date_format    = get_option( 'date_format' );
     $course_tax     = 'ld_course_category';
     $course_terms   = wp_get_object_terms($user_courses, $course_tax);
-
+    $cpe_term       =   get_option( "cpe_term", "CPE" );
     ob_start();
 
     ?>
     <div class="learndash-wrapper cpe_user_available_courses">
         <div class="ld-item-list ld-course-list">
             <div class="ld-item-list-items" id="ld-main-course-list" data-ld-expand-list="true">
-    <?php                
+    <?php
+
+    if( isset($_GET["cpe_status"]) ) {
+        $alert = array(
+            'icon'    => 'alert',
+            'message' => __('Sorry! Your '.$cpe_term.' credit limit is exceeded. Either upgrade your memberships or select course with less credits.', 'learndash'),
+            'type'    => 'warning',
+        );
+        learndash_get_template_part('modules/alert.php', $alert, true);
+
+        ?>
+        <div class="pmpro_actionlinks" style="margin-bottom: 10px;">
+            <a id="pmpro_actionlink-levels" href="<?php echo home_url("/membership-packages/"); ?>">View all Membership Options</a>
+        </div>
+        <?php
+    }
 
     if( !empty( $course_terms ) ) {
         foreach ($course_terms as $term) {
@@ -169,7 +184,7 @@ function cpe_user_available_courses($atts) {
                                 <thead>
                                     <tr>
                                         <th class="ast-col-lg-7">Course Name</th>
-                                        <th>CPE</th>
+                                        <th><?php echo $cpe_term; ?></th>
                                         <th>Progress</th>
                                         <!-- <th class="ast-col-md-2">Available Date</th> -->
                                         <th class="ast-col-md-2">Access</th>
