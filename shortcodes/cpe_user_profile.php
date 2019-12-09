@@ -15,6 +15,7 @@ function cpe_user_profile_callback(){
     $reset_link = wp_lostpassword_url(get_permalink($post));
 
     $cpe_values = get_user_meta($user_id, '_cpe_values', true);
+    $show_credentials   = get_option( "show_credentials", "no" );
     
     ob_start();
 
@@ -49,7 +50,9 @@ function cpe_user_profile_callback(){
                         </tr>
                     </table>
 
-                    <!-- <form  class="form-horizontal cpa_user_fields" action="<?php echo admin_url("admin-post.php") ?>" method="POST">
+                    <?php if( $show_credentials == "yes" ): ?>
+
+                    <form  class="form-horizontal cpa_user_fields" action="<?php echo admin_url("admin-post.php") ?>" method="POST">
                         
                         <table class="table table-borderless">
                             <tr>
@@ -68,7 +71,7 @@ function cpe_user_profile_callback(){
                                 </td>
                                 <td>
                                     <label for="cpa_state" class="control-label">State</label>
-                                    <input type="text" class="form-control" id="cpa_state" name="user_credentials[value][cpa_value]" value="<?php echo $cpe_values["cpa"]["value"]; ?>">
+                                    <input type="text" class="form-control" id="cpa_state" name="user_credentials[value][cpa_value]" value="<?php echo @$cpe_values["cpa"]["value"]; ?>">
                                 </td>
                             </tr>
                             <tr>
@@ -82,7 +85,7 @@ function cpe_user_profile_callback(){
                                 </td>
                                 <td>
                                     <label for="ea_ptin_number" class="control-label">PTIN No.</label>
-                                    <input type="text" class="form-control" id="ea_ptin_number" name="user_credentials[value][ea_value]" value="<?php echo $cpe_values["ea"]["value"]; ?>">
+                                    <input type="text" class="form-control" id="ea_ptin_number" name="user_credentials[value][ea_value]" value="<?php echo @$cpe_values["ea"]["value"]; ?>">
                                 </td>
                             </tr>
                             <tr>
@@ -96,7 +99,7 @@ function cpe_user_profile_callback(){
                                 </td>
                                 <td>
                                     <label for="asfr_ptin_number" class="control-label">PTIN No.</label>
-                                    <input type="text" class="form-control" id="asfr_ptin_number" name="user_credentials[value][asfr_value]" value="<?php echo $cpe_values["asfr"]["value"]; ?>">
+                                    <input type="text" class="form-control" id="asfr_ptin_number" name="user_credentials[value][asfr_value]" value="<?php echo @$cpe_values["asfr"]["value"]; ?>">
                                 </td>
                             </tr>
                             <tr>
@@ -110,7 +113,7 @@ function cpe_user_profile_callback(){
                                 </td>
                                 <td>
                                     <label for="cfp_number" class="control-label">CFP No.</label>
-                                    <input type="text" class="form-control" id="cfp_number" name="user_credentials[value][cfp_value]" value="<?php echo $cpe_values["cfp"]["value"]; ?>">
+                                    <input type="text" class="form-control" id="cfp_number" name="user_credentials[value][cfp_value]" value="<?php echo @$cpe_values["cfp"]["value"]; ?>">
                                 </td>
                             </tr>
                         </table>
@@ -119,7 +122,9 @@ function cpe_user_profile_callback(){
                         <input type="hidden" name="action" value="cpe_update_user_profile">
                         <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
                         <?php wp_nonce_field("cpe_user_profile_action", 'cpe_user_profile_wpnonce'); ?>
-                    </form> -->
+                    </form>
+
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

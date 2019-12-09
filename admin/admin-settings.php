@@ -16,8 +16,9 @@ function wooninjas_cpe_settings_menu() {
 
 function wooninjas_cpe_settings_menu_callback() {
 
-	$billing_info 	= get_option( "cpe_billing_info", "" );
-	$cpe_term 		= get_option( "cpe_term", "CPE" );
+	$billing_info 		= get_option( "cpe_billing_info", "" );
+	$cpe_term 			= get_option( "cpe_term", "CPE" );
+	$show_credentials 	= get_option( "show_credentials", "no" );
 
 	?>
 	<div class="wrap">
@@ -47,6 +48,15 @@ function wooninjas_cpe_settings_menu_callback() {
 						<th><?php _e("CPE Term", CPE_LANG); ?></th>
 						<td>
 							<input type="text" name="cpe_term" class="regular-text" value="<?php echo $cpe_term; ?>">
+							<p class="description"><?php _e( "The term which will displayed all over website, i.e CPE or PDU. Default is CPE." ); ?></p>
+						</td>
+					</tr>
+
+					<tr>
+						<th><?php _e("Show Credentials", CPE_LANG); ?></th>
+						<td>
+							<input type="checkbox" name="show_credentials" value="yes" <?php checked( $show_credentials, "yes" ); ?>>
+							<p class="description"><?php _e( "Show credentials on my account or profile page." ); ?></p>
 						</td>
 					</tr>
 				</tbody>
@@ -68,6 +78,7 @@ function save_cpe_admin_settings() {
 
 		update_option( "cpe_billing_info", $_POST["cpe_billing_info"], false );
 		update_option( "cpe_term", $_POST["cpe_term"], false );
+		update_option( "show_credentials", $_POST["show_credentials"], false );
 		
 		$redirect_url = $_POST["_wp_http_referer"];
 		$redirect_url = add_query_arg("setting-updated" , "true", $redirect_url);
