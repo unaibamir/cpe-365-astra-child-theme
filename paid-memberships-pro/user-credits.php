@@ -114,6 +114,10 @@ function check_log_user_credit() {
 		return;
 	}
 
+    if( is_admin() ) {
+        return;
+    }
+
 	$user_id 		= get_current_user_id();
 	$active_levels 	= pmpro_getMembershipLevelsForUser( $user_id );
 	
