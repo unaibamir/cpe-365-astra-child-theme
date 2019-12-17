@@ -101,7 +101,8 @@ function cpe_user_available_courses($atts) {
     $date_format    = get_option( 'date_format' );
     $course_tax     = 'ld_course_category';
     $course_terms   = wp_get_object_terms($user_courses, $course_tax);
-    $cpe_term       =   get_option( "cpe_term", "CPE" );
+    $cpe_term       = get_option( "cpe_term", "CPE" );
+    $limit_message  = get_option( "credit_limit_message", "Either upgrade your memberships or select courses with less credits" );
     ob_start();
 
     ?>
@@ -111,9 +112,10 @@ function cpe_user_available_courses($atts) {
     <?php
 
     if( isset($_GET["cpe_status"]) ) {
+        $message = str_replace("%cpe_term%", $cpe_term, $limit_message);
         $alert = array(
             'icon'    => 'alert',
-            'message' => __('Sorry! Your '.$cpe_term.' credit limit is exceeded. Either upgrade your memberships or select course with less credits.', 'learndash'),
+            'message' => __( $message, 'learndash'),
             'type'    => 'warning',
         );
         learndash_get_template_part('modules/alert.php', $alert, true);

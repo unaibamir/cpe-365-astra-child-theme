@@ -19,6 +19,7 @@ function wooninjas_cpe_settings_menu_callback() {
 	$billing_info 		= get_option( "cpe_billing_info", "" );
 	$cpe_term 			= get_option( "cpe_term", "CPE" );
 	$show_credentials 	= get_option( "show_credentials", "no" );
+	$limit_message 		= get_option( "credit_limit_message", "" );
 
 	?>
 	<div class="wrap">
@@ -59,6 +60,24 @@ function wooninjas_cpe_settings_menu_callback() {
 							<p class="description"><?php _e( "Show credentials on my account or profile page." ); ?></p>
 						</td>
 					</tr>
+
+					<tr>
+						<th><?php _e("Credit Limit Message", CPE_LANG); ?></th>
+						<td>
+							<div style="max-width: 600px;">
+								<?php
+								wp_editor( $limit_message, "credit_limit_message", array(
+									"media_buttons" => false, 
+									"teeny" => true, 
+									"quicktags" => false, 
+									"textarea_rows" => 7, 
+									"textarea_name" => "credit_limit_message"
+								) );
+								?>
+							</div>
+							<p class="description"><?php _e( "%cpe_term% can be used to display CPE Term." ); ?></p>
+						</td>
+					</tr>
 				</tbody>
 			</table>
 
@@ -79,6 +98,7 @@ function save_cpe_admin_settings() {
 		update_option( "cpe_billing_info", $_POST["cpe_billing_info"], false );
 		update_option( "cpe_term", $_POST["cpe_term"], false );
 		update_option( "show_credentials", $_POST["show_credentials"], false );
+		update_option( "credit_limit_message", $_POST["credit_limit_message"], false );
 		
 		$redirect_url = $_POST["_wp_http_referer"];
 		$redirect_url = add_query_arg("setting-updated" , "true", $redirect_url);
