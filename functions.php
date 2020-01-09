@@ -358,7 +358,7 @@ function cpe_course_breadcrumbs($post_id, $course_id, $user_id)
 
     <?php
 
-    if (is_user_logged_in()) {
+    if ( is_user_logged_in() && sfwd_lms_has_access( $post_id, $user_id ) ) {
 
         $progress = learndash_course_progress(array(
             'user_id'   => $user_id,
