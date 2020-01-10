@@ -64,7 +64,7 @@ function cpe_user_profile_callback(){
                                 <td>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="yes" name="user_credentials[type][cpa]" <?php checked($cpe_values["cpa"]["checked"], "yes"); ?>>
+                                            <input type="checkbox" value="yes" name="user_credentials[type][cpa]" <?php @checked($cpe_values["cpa"]["checked"], "yes"); ?>>
                                             <?php _e("CPA", CPE_LANG); ?>
                                         </label>
                                     </div>
@@ -78,7 +78,7 @@ function cpe_user_profile_callback(){
                                 <td>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="yes" name="user_credentials[type][ea]" <?php checked($cpe_values["ea"]["checked"], "yes"); ?>>
+                                            <input type="checkbox" value="yes" name="user_credentials[type][ea]" <?php @checked($cpe_values["ea"]["checked"], "yes"); ?>>
                                             <?php _e("EA", CPE_LANG); ?>
                                         </label>
                                     </div>
@@ -92,7 +92,7 @@ function cpe_user_profile_callback(){
                                 <td>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="yes" name="user_credentials[type][asfr]" <?php checked($cpe_values["asfr"]["checked"], "yes"); ?>>
+                                            <input type="checkbox" value="yes" name="user_credentials[type][asfr]" <?php @checked($cpe_values["asfr"]["checked"], "yes"); ?>>
                                             <?php _e("ASFR", CPE_LANG); ?>
                                         </label>
                                     </div>
@@ -106,7 +106,7 @@ function cpe_user_profile_callback(){
                                 <td>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="yes" name="user_credentials[type][cfp]" <?php checked($cpe_values["cfp"]["checked"], "yes"); ?>>
+                                            <input type="checkbox" value="yes" name="user_credentials[type][cfp]" <?php @checked($cpe_values["cfp"]["checked"], "yes"); ?>>
                                             <?php _e("CFP", CPE_LANG); ?>
                                         </label>
                                     </div>
