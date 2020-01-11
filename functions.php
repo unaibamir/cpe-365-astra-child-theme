@@ -378,8 +378,12 @@ function cpe_course_breadcrumbs($post_id, $course_id, $user_id)
             } else {
                 $permalink = get_permalink($course_lessons[0]);
             }
-            $permalink = add_query_arg(array("cpe_access" => "grant_access"), $permalink);
-            $btn_link = $permalink;
+            $has_credits   = cpe_get_post_user_credits( $user_id, $post_id );
+            if( !$has_credits ) {
+                $permalink     = add_query_arg(array("cpe_access" => "grant_access"), $permalink);
+            }
+            
+            $btn_link      = $permalink;
         }
         ?>
         <a href="<?php echo $btn_link; ?>" class="user-progress-btn learndash_mark_complete_button"><?php echo $btn_text; ?></a>

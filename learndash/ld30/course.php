@@ -102,14 +102,18 @@ if( $has_access && !$has_credits ) {
 	 * Course info bar
 	 *
 	 */
-	learndash_get_template_part('modules/infobar.php', array(
-		'context'       => 'course',
-		'course_id'     => $course_id,
-		'user_id'       => $user_id,
-		'has_access'    => $has_access,
-		'course_status' => $course_status,
-		'post'          => $post
-	), true); ?>
+	if( is_user_logged_in() && $has_credits ) {
+		learndash_get_template_part('modules/infobar.php', array(
+			'context'       => 'course',
+			'course_id'     => $course_id,
+			'user_id'       => $user_id,
+			'has_access'    => $has_access,
+			'course_status' => $course_status,
+			'post'          => $post
+		), true);
+	}
+
+	?>
 
 	<?php
 	/**
