@@ -35,6 +35,17 @@ $course_content 		= get_the_content($course_id);
 $has_lesson_quizzes 	= learndash_30_has_lesson_quizzes($course_id, $lessons);
 $course_has_plans 		= get_course_plans($course_id, true);
 $course_plans 			= get_course_plans($course_id);
+$has_credits 			= cpe_get_post_user_credits( $user_id, $course_id );
+
+if( $has_access && !$has_credits ) {
+    $user_has_access = false;
+} else if( !$has_access && !$has_credits ) {
+    $user_has_access = false;
+} else if( !$has_access && $has_credits ) {
+    $user_has_access = false;
+} else if( $has_access && $has_credits ) {
+    $user_has_access = true;
+}
 
 ?>
 
@@ -216,7 +227,7 @@ $course_plans 			= get_course_plans($course_id);
 				'lessons'       => $lessons,
 				'lesson_topics' => @$lesson_topics,
 				'quizzes'       => $quizzes,
-				'has_access'    => $has_access,
+				'has_access'    => $user_has_access,
 				'course_pager_results' =>  $course_pager_results,
 				'lesson_progression_enabled' => $lesson_progression_enabled,
 			), true);

@@ -52,28 +52,49 @@ function woo_pmp_level_add_cpe_fields()
 {
     $level_id       = $_REQUEST['edit'];
     $cpe_credits    = get_pmpro_membership_level_meta($level_id, "cpe_credits", true);
-    $cpe_term       =   get_option( "cpe_term", "CPE" );
+    $unlimited_credits    = get_pmpro_membership_level_meta($level_id, "cpe_unlimited_credits", true);
+    $cpe_term       = get_option( "cpe_term", "CPE" );
     ?>
 
     <h3 class="topborder">CPE Credits Settings</h3>
     <table class="form-table">
         <tbody>
             <tr>
+                <th scope="row" valign="top"><label><?php _e( $cpe_term.' unlimited Credits', CPE_LANG);?>:</label></th>
+                <td>
+                    <input type="checkbox" id="unlimited_credits" name="unlimited_credits" value="yes" <?php checked( $unlimited_credits, "yes" ); ?>>
+                    <p class="description"><?php _e("Please check if credits of this membership is unlimited.", CPE_LANG); ?></p>
+                </td>
+            </tr>
+            <tr id="cpe_credits" class="<?php echo $unlimited_credits == "yes" ? "hidden" : ""; ?>">
                 <th scope="row" valign="top"><label><?php _e( $cpe_term.' Credits', CPE_LANG);?>:</label></th>
                 <td>
                     <input type="number" name="cpe_credits" value="<?php echo $cpe_credits; ?>" min="0" class="small-text">
+                    <p class="description"><?php _e("Please enter the credits for this membership level. ", CPE_LANG); ?></p>
                 </td>
             </tr>
         </tbody>
     </table>
+
+    <script>
+        jQuery("#unlimited_credits").click(function(){
+            if( jQuery(this).prop("checked") == true ) {
+                jQuery("#cpe_credits").hide();
+            } else if( jQuery(this).prop("checked") == false ) {
+                jQuery("#cpe_credits").show();
+            }
+        });
+    </script>
     <?php
 }
 
 add_action('pmpro_save_membership_level', 'woo_pmp_level_save_cpe_fields');
 function woo_pmp_level_save_cpe_fields($level_id)
-{
-    $cpe_credits = sanitize_text_field($_POST["cpe_credits"], "");
-    update_pmpro_membership_level_meta($level_id, 'cpe_credits', $cpe_credits);
+{    
+    $cpe_credits = sanitize_text_field( $_POST["cpe_credits"], "");
+    $unlimited_credits = sanitize_text_field( $_POST["unlimited_credits"], "");
+    update_pmpro_membership_level_meta( $level_id, 'cpe_credits', $cpe_credits);
+    update_pmpro_membership_level_meta( $level_id, 'cpe_unlimited_credits', $unlimited_credits);
 }
 
 
@@ -95,65 +116,21 @@ function add_user_credits_memberships( $level_id, $user_id, $cancel_level ) {
     }
 
     if( !empty($cancel_level) ) {
-        update_user_meta( $user_id, "cpe_credits", 0, '' );
+        update_user_meta( $user_id, "cpe_credits", '', '' );
     } else {
         $cpe_credits = get_pmpro_membership_level_meta( $level_id, 'cpe_credits', true );
-        update_user_meta( $user_id, "cpe_credits", $cpe_credits, '' );
-    }
+        $unlimited_credits = get_pmpro_membership_level_meta( $level_id, 'cpe_unlimited_credits', true );
 
-}
-
-
-
-add_action( "wp", "check_log_user_credit" );
-function check_log_user_credit() {
-
-    global $post, $wp_query;
-
-    if( !is_user_logged_in() ) {
-        return;
-    }
-
-    if( is_admin() ) {
-        return;
-    }
-
-    $user = wp_get_current_user();
-    if ( in_array( 'administrator', (array) $user->roles ) ) {
-        return;
-    }
-
-    $user_id        = get_current_user_id();
-    $active_levels  = pmpro_getMembershipLevelsForUser( $user_id );
-    
-    $post_types     = array(
-        'sfwd-courses',
-        'sfwd-lessons',
-        'sfwd-topic',
-        'sfwd-assignment',
-        'sfwd-quiz',
-    );
-
-    $redirect_page = get_page_by_path( "my-account-2/available-courses" );
-    
-
-    if( isset($wp_query->query["post_type"]) && in_array( $wp_query->query["post_type"], $post_types ) ) {
-
-        $course_id          = learndash_get_course_id( $post->ID );
-        $course_credits     = get_post_meta($course_id, '_learndash_course_cpe_credits', true);
-        $has_access         = cpe_check_user_post_credits( $user_id, $course_id );
-        $user_used_credits  = cpe_check_user_credits( $user_id );
-        $user_total_credits = get_user_meta( $user_id, "cpe_credits", true );
-        $remaining_credits  = $user_total_credits - $user_used_credits;
-
-        if( !$has_access ) {
-            if( $remaining_credits >= $course_credits ) {
-                cpe_add_user_post_credits( $user_id, $course_id, $course_credits );
-            } else {
-                wp_safe_redirect( add_query_arg(array("cpe_status" => "restricted"), get_permalink( $redirect_page )) );
-            }
+        if( $unlimited_credits == "yes" ) {
+            update_user_meta( $user_id, "cpe_credits", "unlimited", '' );
+        } else {
+            $old_credits = get_user_meta( $user_id, 'cpe_credits', true );
+            $old_credits = !empty($old_credits) ? $old_credits : 0;
+            $total_credits = $old_credits + $cpe_credits;
+            update_user_meta( $user_id, "cpe_credits", $total_credits, '' );
         }
     }
+
 }
 
 
@@ -170,7 +147,7 @@ function cpe_check_user_post_credits( $user_id, $post_id ) {
 }
 
 
-function cpe_check_user_credits( $user_id ) {
+function cpe_get_user_credits( $user_id ) {
     global $wpdb;
 
     $user_credit = $wpdb->get_col( "SELECT SUM(credit) FROM `{$wpdb->base_prefix}user_credits` WHERE user_id = {$user_id}" );
@@ -190,11 +167,33 @@ function cpe_add_user_post_credits( $user_id, $post_id, $credits ) {
     $wpdb->insert(
         "{$wpdb->base_prefix}user_credits",
         array(
-            "user_id"   => $user_id,
+            "user_id"   =>  $user_id,
             "post_id"   =>  $post_id,
             "credit"    =>  $credits
         )
     );
+}
+
+/**
+ * Get user post credit access
+ *
+ * @since 2.1.0
+ *
+ * @param int $user_id user id.
+ * @param int $post_id post id.
+ * @return bool true or false
+ */
+function cpe_get_post_user_credits( $user_id, $post_id ) {
+    global $wpdb;
+
+    $user_access = $wpdb->get_row(
+        $wpdb->prepare("SELECT *  FROM `{$wpdb->base_prefix}user_credits` WHERE `post_id` = %d AND `user_id` = %d LIMIT 0, 1", $post_id, $user_id)
+    );
+
+    if( !empty($user_access) ) {
+        return true;
+    }
+    return false;
 }
 
 add_action( 'show_user_profile', 'cpe_user_credits_fields' );
@@ -203,9 +202,10 @@ add_action( 'edit_user_profile', 'cpe_user_credits_fields' );
 function cpe_user_credits_fields( $user ) {
 
     $user_id            =   $user->ID;
-    $user_total_credits =   get_user_meta( $user_id, "cpe_credits", true );
-    $user_used_credits  =   cpe_check_user_credits( $user_id );
     $cpe_term           =   get_option( "cpe_term", "CPE" );
+    $user_total_credits =   get_user_meta( $user_id, "cpe_credits", true );
+    $user_used_credits  =   cpe_get_user_credits( $user_id );
+    $user_used_credits  =   !empty($user_used_credits) ? $user_used_credits : 0;
 
     ?>
     <br>
@@ -239,4 +239,68 @@ function save_user_credits_profile_fields( $user_id ) {
         return false; 
     }
     update_user_meta( $user_id, 'cpe_credits', $_POST['user_credits'] );
+}
+
+
+add_action( "wp", "check_log_user_credit" );
+function check_log_user_credit() {
+
+    global $post, $wp_query;
+
+    if( !is_user_logged_in() ) {
+        return;
+    }
+
+    if( is_admin() ) {
+        return;
+    }
+
+    $user = wp_get_current_user();
+
+    if ( in_array( 'administrator', (array) $user->roles ) ) {
+        return;
+    }
+
+    $user_id        = get_current_user_id();
+    $active_levels  = pmpro_getMembershipLevelsForUser( $user_id );
+    
+    $post_types     = array(
+        'sfwd-courses',
+        'sfwd-lessons',
+        'sfwd-topic',
+        'sfwd-assignment',
+        'sfwd-quiz',
+    );
+
+    $redirect_page = get_page_by_path( "my-account-2/available-courses" );
+    
+
+    if( isset($wp_query->query["post_type"], $_GET["cpe_access"]) && in_array( $wp_query->query["post_type"], $post_types ) && $_GET["cpe_access"] == "grant_access" ) {
+        
+        $course_id          = learndash_get_course_id( $post->ID );
+        $course_credits     = get_post_meta($course_id, '_learndash_course_cpe_credits', true);
+        $user_total_credits = get_user_meta( $user_id, "cpe_credits", true );
+
+        if( $user_total_credits == 0 || $user_total_credits == "unlimited" ) {
+            cpe_add_user_post_credits( $user_id, $course_id, $course_credits );
+            wp_safe_redirect( remove_query_arg( "cpe_access" ) );
+            exit;
+            return;
+        }
+
+        $user_used_credits  = cpe_get_user_credits( $user_id );
+        $remaining_credits  = $user_total_credits - $user_used_credits;
+        $has_access         = cpe_check_user_post_credits( $user_id, $course_id );
+
+        if( !$has_access ) {
+            if( $remaining_credits >= $course_credits ) {
+                cpe_add_user_post_credits( $user_id, $course_id, $course_credits );
+                wp_safe_redirect( remove_query_arg( "cpe_access" ) );
+                exit;
+            } else {
+                wp_safe_redirect( add_query_arg(array("cpe_status" => "restricted"), get_permalink( $redirect_page )) );
+                exit;
+            }
+        }
+    }
 }

@@ -102,6 +102,8 @@ function cpe_user_available_courses($atts) {
     $course_tax     = 'ld_course_category';
     $course_terms   = wp_get_object_terms($user_courses, $course_tax);
     $cpe_term       = get_option( "cpe_term", "CPE" );
+    $total_credits  = get_user_meta( $user_id, 'cpe_credits', true );
+    $used_credits   = cpe_get_user_credits( $user_id );
     $limit_message  = get_option( "credit_limit_message", "Either upgrade your memberships or select courses with less credits" );
     ob_start();
 
@@ -112,10 +114,12 @@ function cpe_user_available_courses($atts) {
     <?php
 
     if( isset($_GET["cpe_status"]) ) {
-        $message = str_replace("%cpe_term%", $cpe_term, $limit_message);
+        $limit_message = str_replace("%cpe_term%", $cpe_term, $limit_message);
+        $limit_message = str_replace("%total_credits%", $total_credits, $limit_message);
+        $limit_message = str_replace("%used_credits%", $used_credits, $limit_message);
         $alert = array(
             'icon'    => 'alert',
-            'message' => __( $message, 'learndash'),
+            'message' => __( $limit_message, 'learndash'),
             'type'    => 'warning',
         );
         learndash_get_template_part('modules/alert.php', $alert, true);

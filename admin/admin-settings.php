@@ -75,7 +75,13 @@ function wooninjas_cpe_settings_menu_callback() {
 								) );
 								?>
 							</div>
-							<p class="description"><?php _e( "%cpe_term% can be used to display CPE Term." ); ?></p>
+							<p class="description">
+								<ul>
+									<li><?php _e( "%cpe_term% can be used to display CPE Term." ); ?></li>
+									<li><?php _e( "%total_credits% can be used to display total credits of the user." ); ?></li>
+									<li><?php _e( "%used_credits% can be used to display total of the used credits of the user." ); ?></li>
+								</ul>
+							</p>
 						</td>
 					</tr>
 				</tbody>

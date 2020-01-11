@@ -378,6 +378,7 @@ function cpe_course_breadcrumbs($post_id, $course_id, $user_id)
             } else {
                 $permalink = get_permalink($course_lessons[0]);
             }
+            $permalink = add_query_arg(array("cpe_access" => "grant_access"), $permalink);
             $btn_link = $permalink;
         }
         ?>
@@ -397,6 +398,7 @@ function woo_user_course_resume_link($step_course_id, $user_id)
     }
 
     $last_know_post_object = get_post($step_id);
+
     if (null !== $last_know_post_object) {
         if (function_exists('learndash_get_step_permalink')) {
             $permalink = learndash_get_step_permalink($step_id, $step_course_id);
