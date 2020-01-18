@@ -281,7 +281,7 @@ function check_log_user_credit() {
         $course_credits     = get_post_meta($course_id, '_learndash_course_cpe_credits', true);
         $user_total_credits = get_user_meta( $user_id, "cpe_credits", true );
 
-        if( $user_total_credits == 0 || $user_total_credits == "unlimited" ) {
+        if( empty($user_total_credits) || $user_total_credits == 0 || $user_total_credits == "unlimited" ) {
             cpe_add_user_post_credits( $user_id, $course_id, $course_credits );
             wp_safe_redirect( remove_query_arg( "cpe_access" ) );
             exit;
