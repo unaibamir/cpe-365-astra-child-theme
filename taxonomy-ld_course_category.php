@@ -81,6 +81,13 @@ get_header();
 									$course_cpe 		= get_post_meta($course_id, "_learndash_course_cpe_credits", true);
 									$course_cpe 		= !empty($course_cpe) ? $course_cpe : "0.00";
 									$instructor 		= get_post_meta($course_id, "_learndash_course_instructor", true);
+
+									$progress = learndash_course_progress(array(
+										'user_id'   => $user_id,
+										'course_id' => $course_id,
+										'array'     => true
+									));
+
 									?>
 									<div class="ast-col-md-6 ast-col-sm-6 ast-col-xs-12 course-post-wrapper">
 										<article id="post-<?php the_ID(); ?>" <?php post_class("course-post course-tooltips"); ?> data-tooltip-content="#tooltip_content_<?php echo $course_id; ?>">
@@ -109,7 +116,14 @@ get_header();
 
 													<div class="txtBtn">
 														<?php
-														if (sfwd_lms_has_access($course_id, $user_id)) :
+														if( $progress["completed"] == 1 || $progress["completed"] == true || $progress["completed"] === TRUE ) {
+															?>
+															<a href="<?php echo esc_url(get_permalink()); ?>" class="course-buy-btn">
+																<?php _e( 'Completed' ); ?>
+															</a>
+															<?php
+														}
+														else if ( sfwd_lms_has_access($course_id, $user_id) ) :
 															?>
 															<a href="<?php echo esc_url(get_permalink()); ?>" class="course-buy-btn">
 																Start Course
@@ -187,6 +201,13 @@ get_header();
 											$course_cpe 		= get_post_meta($course_id, "_learndash_course_cpe_credits", true);
 											$course_details 	= get_post_meta($course_id, "_learndash_course_grid_short_description", true);
 											$course_cpe 		= !empty($course_cpe) ? $course_cpe : "0.00";
+
+											$progress = learndash_course_progress(array(
+												'user_id'   => $user_id,
+												'course_id' => $course_id,
+												'array'     => true
+											));
+
 											?>
 
 											<tr id="course-<?php echo $course_id; ?>">
@@ -209,10 +230,17 @@ get_header();
 												<td><?php echo $course_price; ?></td>
 												<td>
 													<?php
-													if (sfwd_lms_has_access($course_id, $user_id)) :
+													if( $progress["completed"] == 1 || $progress["completed"] == true || $progress["completed"] === TRUE ) {
 														?>
 														<a href="<?php echo esc_url(get_permalink()); ?>" class="course-buy-btn">
-															Start Course
+															<?php _e( 'Completed' ); ?>
+														</a>
+														<?php
+													}
+													else if ( sfwd_lms_has_access($course_id, $user_id) ) :
+														?>
+														<a href="<?php echo esc_url(get_permalink()); ?>" class="course-buy-btn">
+															<?php _e( 'Start Course' ); ?>
 														</a>
 													<?php
 													else :
