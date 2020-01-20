@@ -272,7 +272,11 @@ function check_log_user_credit() {
         'sfwd-quiz',
     );
 
-    $redirect_page = get_page_by_path( "my-account-2/available-courses" );
+    $account_page_id= pmpro_getOption( "account_page_id" );
+    $account_page   = get_page( $account_page_id );
+    $redirect_page  = get_page_by_path( "{$account_page->post_name}/available-courses" );
+
+    //$redirect_page = get_page_by_path( "my-account-2/available-courses" );
     
 
     if( isset($wp_query->query["post_type"], $_GET["cpe_access"]) && in_array( $wp_query->query["post_type"], $post_types ) && $_GET["cpe_access"] == "grant_access" ) {

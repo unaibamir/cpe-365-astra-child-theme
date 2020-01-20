@@ -474,3 +474,6 @@ ul.user-dashboard-menu li a:hover {
     position: relative;
     top: -8px;
 }
+.learndash-wrapper .ld-alert-success {
+    color: #0b64a9;
+}

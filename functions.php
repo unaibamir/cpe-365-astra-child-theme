@@ -340,19 +340,25 @@ function cpe_course_breadcrumbs($post_id, $course_id, $user_id)
     $user_id        =   get_current_user_id();
     $post_id        =   $post->ID;
 
-    $term_list = wp_get_post_terms($post_id, 'ld_course_category', array("fields" => "all"));
+    $term_list      = wp_get_post_terms($post_id, 'ld_course_category', array("fields" => "all"));
+
+    $account_page_id= pmpro_getOption( "account_page_id" );
+    $account_page   = get_page( $account_page_id );
+    $redirect_page  = get_page_by_path( "{$account_page->post_name}/available-courses" );
+    
     
     ?>
 <div class="learndash-breadcrumbs">
     <ol class="breadcrumb course-breadcrumb">
-        <li><a href="<?php echo home_url("/") ?>"><?php _e("Home"); ?></a></li>
+        <li><a href="<?php echo esc_url( get_permalink( $account_page_id ) ); ?>"><?php _e("My Account"); ?></a></li>
         <?php
-        if (!empty($term_list)) {
+        /*if (!empty($term_list)) {
+            ?>
+            <li><a href="<?php echo get_term_link($term_list[0]->term_id, $term_list[0]->taxonomy) ?>"><?php echo $term_list[0]->name; ?></a></li>
+            <?php
+        }*/
         ?>
-        <li><a href="<?php echo get_term_link($term_list[0]->term_id, $term_list[0]->taxonomy) ?>"><?php echo $term_list[0]->name; ?></a></li>
-        <?php
-        }
-        ?>
+        <li><a href="<?php echo esc_url( get_permalink( $redirect_page ) ); ?>"><?php _e( 'Available Courses' ); ?></a></li>
         <li class="active"><?php echo get_the_title($course_id); ?></li>
     </ol>
 
@@ -366,19 +372,34 @@ function cpe_course_breadcrumbs($post_id, $course_id, $user_id)
             'array'     => true
         ));
 
-        $btn_link = woo_user_course_resume_link($post_id, $user_id);
+        $btn_link = woo_user_course_resume_link( $post_id, $user_id );
         
-        if ($progress["percentage"] > 0 && $btn_link) {
+        if( $progress["completed"] == 1 || $progress["completed"] == true || $progress["completed"] === TRUE ) {
+
+            $btn_text = __("Completed");
+            $course_certficate_link = learndash_get_course_certificate_link( $post_id, $user_id );
+            if( $course_certficate_link ) {
+                $btn_link = $course_certficate_link;
+            }
+
+        }
+        else if ($progress["percentage"] > 0 && $btn_link) {
+            
             $btn_text = __("Resume");
+
         } else {
+            
             $btn_text = __("Start");
             $course_lessons = learndash_course_get_steps_by_type($post_id, 'sfwd-lessons');
+            
             if (function_exists('learndash_get_step_permalink')) {
                 $permalink = learndash_get_step_permalink($course_lessons[0], $post_id);
             } else {
                 $permalink = get_permalink($course_lessons[0]);
             }
+            
             $has_credits   = cpe_get_post_user_credits( $user_id, $post_id );
+            
             if( !$has_credits ) {
                 $permalink     = add_query_arg(array("cpe_access" => "grant_access"), $permalink);
             }
@@ -394,7 +415,7 @@ function cpe_course_breadcrumbs($post_id, $course_id, $user_id)
     <?php
 }
 
-function woo_user_course_resume_link($step_course_id, $user_id)
+function woo_user_course_resume_link( $step_course_id, $user_id )
 {
     $step_id = get_user_meta($user_id, 'learndash_last_known_course_' . $step_course_id, true);
     if (empty($step_id)) {
