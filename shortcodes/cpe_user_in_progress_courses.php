@@ -94,8 +94,12 @@ function cpe_user_in_progress_courses($atts) {
     $current_user = get_user_by('id', $atts['user_id']);
     //$user_courses = ld_get_mycourses( $atts['user_id'], $atts );
 
+    $args = array(
+        'orderby'   =>  'date'
+    );
+
     $posts_in_courses           =   array();
-    $user_enrolled_courses      =   learndash_user_get_enrolled_courses($atts['user_id']);
+    $user_enrolled_courses      =   learndash_user_get_enrolled_courses($atts['user_id'], $args);
 
     if (empty($user_enrolled_courses)) {
         return $data;
@@ -117,8 +121,8 @@ function cpe_user_in_progress_courses($atts) {
 
     $user_courses   =   $posts_in_courses;
 
-    $usermeta = get_user_meta($atts['user_id'], '_sfwd-quizzes', true);
-    $quiz_attempts_meta = empty($usermeta) ? false : $usermeta;
+    /*$usermeta = get_user_meta($atts['user_id'], '_sfwd-quizzes', true);
+    $quiz_attempts_meta = empty($usermeta) ? false : $usermeta;*/
     $quiz_attempts = array();
 
     /*if ( ! empty( $quiz_attempts_meta ) ) {

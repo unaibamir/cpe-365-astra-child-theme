@@ -617,3 +617,13 @@ function cpe_orders_print_view()
     exit;
 }
 add_action('admin_post_cpe_print_invoice', 'cpe_orders_print_view');
+
+function cpe_learndash_status_bubble( $bubble, $status ) {
+    if( strpos($status, "cpe_completed_") !== FALSE ) {
+        $date_format = get_option( "date_format" );
+        list( $string, $completed_timestamp ) = explode('cpe_completed_', $status);
+        $bubble = '<div class="ld-status ld-status-complete ld-secondary-background">' . esc_html_x( 'Completed on ' . date( $date_format, $completed_timestamp ) , 'In Progress item status', 'learndash' ) . '</div>';
+    }
+    return $bubble;
+}
+add_filter( "learndash_status_bubble", "cpe_learndash_status_bubble", 999, 2 );
