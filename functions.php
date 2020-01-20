@@ -349,15 +349,13 @@ function cpe_course_breadcrumbs($post_id, $course_id, $user_id)
     
     ?>
 <div class="learndash-breadcrumbs">
+    
+    <a href="<?php echo esc_url( get_permalink( $redirect_page ) ); ?>" class="user-progress-btn user-back-link learndash_mark_complete_button">
+        <i class="fa fa-angle-double-left" aria-hidden="true"></i> <?php _e( 'Go to Available Course' ); ?>
+    </a>
+
     <ol class="breadcrumb course-breadcrumb">
         <li><a href="<?php echo esc_url( get_permalink( $account_page_id ) ); ?>"><?php _e("My Account"); ?></a></li>
-        <?php
-        /*if (!empty($term_list)) {
-            ?>
-            <li><a href="<?php echo get_term_link($term_list[0]->term_id, $term_list[0]->taxonomy) ?>"><?php echo $term_list[0]->name; ?></a></li>
-            <?php
-        }*/
-        ?>
         <li><a href="<?php echo esc_url( get_permalink( $redirect_page ) ); ?>"><?php _e( 'Available Courses' ); ?></a></li>
         <li class="active"><?php echo get_the_title($course_id); ?></li>
     </ol>

@@ -435,6 +435,14 @@ ul.user-dashboard-menu li a:hover {
     max-width: 130px;
     padding: 8px 9px;
 }
+.learndash-breadcrumbs a.user-progress-btn.user-back-link {
+    top: 4px;
+    max-width: 180px;
+    right: 160px;
+}
+.learndash-breadcrumbs a.user-progress-btn i {
+    margin-right: 5px;
+}
 
 .table-borderless, .table-borderless tbody+tbody, .table-borderless td, .table-borderless th, .table-borderless thead th {
     border: 0 !important;

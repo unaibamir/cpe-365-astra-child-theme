@@ -5,7 +5,7 @@
  *
  * Available Variables:
  * $course_id       : (int) ID of the course
- * $course      : (object) Post object of the course
+ * $course      	: (object) Post object of the course
  * $course_settings : (array) Settings specific to current course
  *
  * $courses_options : Options/Settings as configured on Course Options page
@@ -17,7 +17,7 @@
  * $current_user    : (object) Currently logged in user object
  *
  * $course_status   : Course Status
- * $has_access  : User has access to course or is enrolled.
+ * $has_access  	: User has access to course or is enrolled.
  * $materials       : Course Materials
  * $has_course_content      : Course has course content
  * $lessons         : Lessons Array
@@ -45,6 +45,18 @@ if( $has_access && !$has_credits ) {
     $user_has_access = false;
 } else if( $has_access && $has_credits ) {
     $user_has_access = true;
+}
+
+if( $has_access ) {
+	$progress = learndash_course_progress(array(
+	    'user_id'   => $user_id,
+	    'course_id' => $course_id,
+	    'array'     => true
+	));
+
+	if( $progress["completed"] == 1 || $progress["completed"] == true || $progress["completed"] === TRUE ) {
+		$user_has_access = true;
+	}
 }
 
 ?>
