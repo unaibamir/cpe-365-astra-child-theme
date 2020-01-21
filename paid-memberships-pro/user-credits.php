@@ -146,8 +146,20 @@ function cpe_check_user_post_credits( $user_id, $post_id ) {
     return $has_credit;
 }
 
-
 function cpe_get_user_credits( $user_id ) {
+    global $wpdb;
+
+    $user_credit = $wpdb->get_results( "SELECT * FROM `{$wpdb->base_prefix}user_credits` WHERE user_id = {$user_id}" );
+
+    if( !empty($user_credit) ) {
+        return $user_credit;
+    } else {
+        return false;
+    }
+}
+
+
+function cpe_get_user_total_credits( $user_id ) {
     global $wpdb;
 
     $user_credit = $wpdb->get_col( "SELECT SUM(credit) FROM `{$wpdb->base_prefix}user_credits` WHERE user_id = {$user_id}" );
@@ -157,7 +169,6 @@ function cpe_get_user_credits( $user_id ) {
     } else {
         return 0;
     }
-
 }
 
 
@@ -204,7 +215,7 @@ function cpe_user_credits_fields( $user ) {
     $user_id            =   $user->ID;
     $cpe_term           =   get_option( "cpe_term", "CPE" );
     $user_total_credits =   get_user_meta( $user_id, "cpe_credits", true );
-    $user_used_credits  =   cpe_get_user_credits( $user_id );
+    $user_used_credits  =   cpe_get_user_total_credits( $user_id );
     $user_used_credits  =   !empty($user_used_credits) ? $user_used_credits : 0;
 
     ?>
@@ -292,7 +303,7 @@ function check_log_user_credit() {
             return;
         }
 
-        $user_used_credits  = cpe_get_user_credits( $user_id );
+        $user_used_credits  = cpe_get_user_total_credits( $user_id );
         $remaining_credits  = $user_total_credits - $user_used_credits;
         $has_access         = cpe_check_user_post_credits( $user_id, $course_id );
 

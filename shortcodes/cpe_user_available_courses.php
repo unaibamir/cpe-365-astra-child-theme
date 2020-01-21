@@ -103,7 +103,7 @@ function cpe_user_available_courses($atts) {
     $course_terms   = wp_get_object_terms($user_courses, $course_tax);
     $cpe_term       = get_option( "cpe_term", "CPE" );
     $total_credits  = get_user_meta( $user_id, 'cpe_credits', true );
-    $used_credits   = cpe_get_user_credits( $user_id );
+    $used_credits   = cpe_get_user_total_credits( $user_id );
     $limit_message  = get_option( "credit_limit_message", "Either upgrade your memberships or select courses with less credits" );
     ob_start();
 

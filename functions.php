@@ -40,6 +40,7 @@ require_once CPE_DIR . "shortcodes/cpe_user_certificates.php";
 require_once CPE_DIR . "shortcodes/cpe_user_completed_courses.php";
 require_once CPE_DIR . "shortcodes/cpe_user_in_progress_courses.php";
 require_once CPE_DIR . "shortcodes/cpe_user_profile.php";
+require_once CPE_DIR . "shortcodes/cpe_credits_info.php";
 require_once CPE_DIR . "paid-memberships-pro/user-credits.php";
 
 
@@ -351,7 +352,7 @@ function cpe_course_breadcrumbs($post_id, $course_id, $user_id)
 <div class="learndash-breadcrumbs">
     
     <a href="<?php echo esc_url( get_permalink( $redirect_page ) ); ?>" class="user-progress-btn user-back-link learndash_mark_complete_button">
-        <i class="fa fa-angle-double-left" aria-hidden="true"></i> <?php _e( 'Go to Available Course' ); ?>
+        <i class="fa fa-angle-double-left" aria-hidden="true"></i> <?php _e( 'Go to Available Courses' ); ?>
     </a>
 
     <ol class="breadcrumb course-breadcrumb">
@@ -372,7 +373,7 @@ function cpe_course_breadcrumbs($post_id, $course_id, $user_id)
 
         $btn_link = woo_user_course_resume_link( $post_id, $user_id );
         
-        if( $progress["completed"] == 1 || $progress["completed"] == true || $progress["completed"] === TRUE ) {
+        if( $progress["percentage"] == 100 ) {
 
             $btn_text = __("Completed");
             $course_certficate_link = learndash_get_course_certificate_link( $post_id, $user_id );
