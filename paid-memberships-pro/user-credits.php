@@ -283,9 +283,9 @@ function check_log_user_credit() {
         'sfwd-quiz',
     );
 
-    $account_page_id= pmpro_getOption( "account_page_id" );
-    $account_page   = get_page( $account_page_id );
-    $redirect_page  = get_page_by_path( "{$account_page->post_name}/available-courses" );
+    $account_page_id    = pmpro_getOption( "account_page_id" );
+    $account_page       = get_page( $account_page_id );
+    $redirect_page      = get_page_by_path( "{$account_page->post_name}/available-courses" );
 
     //$redirect_page = get_page_by_path( "my-account-2/available-courses" );
     

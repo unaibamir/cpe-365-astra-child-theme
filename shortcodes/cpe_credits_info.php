@@ -27,19 +27,19 @@ function cpe_credits_info_callback( $atts = array() ) {
        <div class="ast-row">
            <div class="ast-col-lg-4 ast-col-md-4 ast-col-sm-12 ast-col-xs-12">
                 <div class="aligncenter">
-                   <h3><?php echo __( sprintf("Subscription %s", $cpe_term) ); ?></h3>
+                   <h3><?php echo __( sprintf("Subscription %s", "Credits") ); ?></h3>
                    <p><span><?php echo $user_total_credits; ?></span></p>
                 </div>
            </div>
            <div class="ast-col-lg-4 ast-col-md-4 ast-col-sm-12 ast-col-xs-12">
                 <div class="aligncenter">
-                   <h3><?php echo __( sprintf("Used %s", $cpe_term) ); ?></h3>
+                   <h3><?php echo __( sprintf("Used %s", "Credits") ); ?></h3>
                    <p><span><?php echo $user_used_credits; ?></span></p>
                 </div>
            </div>
            <div class="ast-col-lg-4 ast-col-md-4 ast-col-sm-12 ast-col-xs-12">
                 <div class="aligncenter">
-                   <h3><?php echo __( sprintf("Remaining %s", $cpe_term) ); ?></h3>
+                   <h3><?php echo __( sprintf("Remaining %s", "Credits") ); ?></h3>
                    <?php echo $remaining_credits; ?>
                 </div>
            </div>

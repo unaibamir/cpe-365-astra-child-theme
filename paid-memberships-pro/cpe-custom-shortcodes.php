@@ -64,10 +64,12 @@ function cpe_pmpro_shortcode_account($atts, $content=null, $code=""){
 									<?php } ?>
 									
 									<?php 
-										//To do: Only show CHANGE link if this level is in a group that has upgrade/downgrade rules
-										if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) { ?>
-										<a id="pmpro_actionlink-change" href="<?php echo pmpro_url("levels")?>" id="pmpro_account-change"><?php _e("Change", 'paid-memberships-pro' );?></a>
-									<?php } ?>
+									//To do: Only show CHANGE link if this level is in a group that has upgrade/downgrade rules
+									/*if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) { ?>
+									<a id="pmpro_actionlink-change" href="<?php echo pmpro_url("levels")?>" id="pmpro_account-change"><?php _e("Change", 'paid-memberships-pro' );?></a>
+									<?php 
+									}*/ 
+									?>
 									<a id="pmpro_actionlink-cancel" href="<?php echo pmpro_url("cancel", "?levelstocancel=" . $level->id)?>"><?php _e("Cancel", 'paid-memberships-pro' );?></a>
 									<?php do_action("pmpro_member_action_links_after"); ?>
 								</div> <!-- end pmpro_actionlinks -->

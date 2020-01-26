@@ -338,30 +338,52 @@ function cpe_course_breadcrumbs($post_id, $course_id, $user_id)
 
     global $post;
 
-    $user_id        =   get_current_user_id();
-    $post_id        =   $post->ID;
+    $user_id            =   get_current_user_id();
+    $post_id            =   $post->ID;
 
-    $term_list      = wp_get_post_terms($post_id, 'ld_course_category', array("fields" => "all"));
+    $term_list          = wp_get_post_terms($post_id, 'ld_course_category', array("fields" => "all"));
 
-    $account_page_id= pmpro_getOption( "account_page_id" );
-    $account_page   = get_page( $account_page_id );
-    $redirect_page  = get_page_by_path( "{$account_page->post_name}/available-courses" );
-    
-    
+    $account_page_id    = pmpro_getOption( "account_page_id" );
+    $account_page       = get_page( $account_page_id );
+    $redirect_page      = get_page_by_path( "{$account_page->post_name}/available-courses" );
+    $user_sub           = pmpro_getMembershipLevelForUser( $user_id);
+
+
     ?>
 <div class="learndash-breadcrumbs">
     
-    <a href="<?php echo esc_url( get_permalink( $redirect_page ) ); ?>" class="user-progress-btn user-back-link learndash_mark_complete_button">
-        <i class="fa fa-angle-double-left" aria-hidden="true"></i> <?php _e( 'Go to Available Courses' ); ?>
-    </a>
-
-    <ol class="breadcrumb course-breadcrumb">
-        <li><a href="<?php echo esc_url( get_permalink( $account_page_id ) ); ?>"><?php _e("My Account"); ?></a></li>
-        <li><a href="<?php echo esc_url( get_permalink( $redirect_page ) ); ?>"><?php _e( 'Available Courses' ); ?></a></li>
-        <li class="active"><?php echo get_the_title($course_id); ?></li>
-    </ol>
 
     <?php
+
+    if( is_user_logged_in() ) { ?>
+    
+        <?php if( !empty($user_sub) ) : ?>
+            <a href="<?php echo esc_url( get_permalink( $redirect_page ) ); ?>" class="user-progress-btn user-back-link learndash_mark_complete_button">
+                <i class="fa fa-angle-double-left" aria-hidden="true"></i> <?php _e( 'Go to Available Courses' ); ?>
+            </a>
+        <?php endif; ?>
+        <ol class="breadcrumb course-breadcrumb">
+            <li><a href="<?php echo esc_url( get_permalink( $account_page_id ) ); ?>"><?php _e("My Account"); ?></a></li>
+            <li><a href="<?php echo esc_url( get_permalink( $redirect_page ) ); ?>"><?php _e( 'Available Courses' ); ?></a></li>
+            <li class="active"><?php echo get_the_title($course_id); ?></li>
+        </ol>
+
+        <?php
+    } else {
+        ?>
+        <ol class="breadcrumb course-breadcrumb">
+            <li><a href="<?php echo home_url("/") ?>"><?php _e("Home"); ?></a></li>
+            <?php
+            if (!empty($term_list)) {
+            ?>
+            <li><a href="<?php echo get_term_link($term_list[0]->term_id, $term_list[0]->taxonomy) ?>"><?php echo $term_list[0]->name; ?></a></li>
+            <?php
+            }
+            ?>
+            <li class="active"><?php echo get_the_title($course_id); ?></li>
+        </ol>
+        <?php
+    }
 
     if ( is_user_logged_in() && sfwd_lms_has_access( $post_id, $user_id ) ) {
 
