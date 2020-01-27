@@ -185,6 +185,13 @@ function cpe_add_user_post_credits( $user_id, $post_id, $credits ) {
     );
 }
 
+function cpe_user_started_courses( $user_id ) {
+    global $wpdb;
+
+    $user_started_courses = $wpdb->get_col( "SELECT `post_id` FROM `{$wpdb->base_prefix}user_credits` WHERE user_id = {$user_id} ORDER BY created_at DESC" );
+    return $user_started_courses;
+}
+
 /**
  * Get user post credit access
  *

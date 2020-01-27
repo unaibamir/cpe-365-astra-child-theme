@@ -347,6 +347,7 @@ function cpe_course_breadcrumbs($post_id, $course_id, $user_id)
     $account_page       = get_page( $account_page_id );
     $redirect_page      = get_page_by_path( "{$account_page->post_name}/available-courses" );
     $user_sub           = pmpro_getMembershipLevelForUser( $user_id);
+    $has_credits        = cpe_get_post_user_credits( $user_id, $post_id );
 
 
     ?>
@@ -404,7 +405,7 @@ function cpe_course_breadcrumbs($post_id, $course_id, $user_id)
             }
 
         }
-        else if ($progress["percentage"] > 0 && $btn_link) {
+        else if ($progress["percentage"] > 0 || $has_credits && $btn_link) {
             
             $btn_text = __("Resume");
 
@@ -418,8 +419,6 @@ function cpe_course_breadcrumbs($post_id, $course_id, $user_id)
             } else {
                 $permalink = get_permalink($course_lessons[0]);
             }
-            
-            $has_credits   = cpe_get_post_user_credits( $user_id, $post_id );
             
             if( !$has_credits ) {
                 $permalink     = add_query_arg(array("cpe_access" => "grant_access"), $permalink);
@@ -650,3 +649,24 @@ function cpe_learndash_status_bubble( $bubble, $status ) {
     return $bubble;
 }
 add_filter( "learndash_status_bubble", "cpe_learndash_status_bubble", 999, 2 );
+
+
+function cpe_get_user_completed_courses_id( $user_id ) {
+    global $wpdb;
+
+    $user_courses_id = $wpdb->get_col( "SELECT `course_id` FROM `{$wpdb->base_prefix}learndash_user_activity` WHERE `user_id` = {$user_id} AND `activity_type` LIKE 'course' AND activity_completed != '' ORDER BY `activity_completed` DESC" );
+    
+    $user_courses = array();
+
+    if( !empty($user_courses_id) ) {
+        foreach ( $user_courses_id as $course_id) {
+            if( get_post_status( $course_id ) ) {
+                array_push($user_courses, $course_id );
+            }
+        }
+    } else {
+        return $user_courses;
+    }
+
+    return $user_courses;
+}

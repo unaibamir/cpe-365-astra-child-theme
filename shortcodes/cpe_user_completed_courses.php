@@ -95,27 +95,16 @@ function cpe_user_completed_courses($atts) {
     //$user_courses = ld_get_mycourses( $atts['user_id'], $atts );
 
     $posts_in_courses           =   array();
-    $user_enrolled_courses      =   learndash_user_get_enrolled_courses($atts['user_id']);
+    //$user_enrolled_courses      =   learndash_user_get_enrolled_courses($atts['user_id']);
+    $user_courses               =   cpe_get_user_completed_courses_id($atts['user_id']);
+    $user_enrolled_courses      = $user_courses;
+    
 
     if (empty($user_enrolled_courses)) {
         return $data;
     }
 
-    foreach ($user_enrolled_courses as $key => $enrolled_course_id) {
-        $progress = learndash_course_progress(array(
-            'user_id'   => $atts['user_id'],
-            'course_id' => $enrolled_course_id,
-            'array'     => true
-        ));
-        
-        if ($progress['percentage'] == 100) {
-            if (sfwd_lms_has_access($enrolled_course_id, $atts['user_id'])) {
-                array_push($posts_in_courses, $enrolled_course_id);
-            }
-        }
-    }
-
-    $user_courses   =   $posts_in_courses;
+    $user_courses   =   $user_enrolled_courses;
     
     $usermeta = get_user_meta($atts['user_id'], '_sfwd-quizzes', true);
     $quiz_attempts_meta = empty($usermeta) ? false : $usermeta;

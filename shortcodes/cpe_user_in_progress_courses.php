@@ -99,7 +99,10 @@ function cpe_user_in_progress_courses($atts) {
     );
 
     $posts_in_courses           =   array();
-    $user_enrolled_courses      =   learndash_user_get_enrolled_courses($atts['user_id'], $args);
+    //$user_enrolled_courses      =   learndash_user_get_enrolled_courses($atts['user_id'], $args);
+    $user_started_courses       =   cpe_user_started_courses( $atts['user_id'] );
+    $user_enrolled_courses      =   $user_started_courses;
+    
 
     if (empty($user_enrolled_courses)) {
         return $data;
@@ -112,7 +115,7 @@ function cpe_user_in_progress_courses($atts) {
             'array'     => true
         ));
 
-        if ($progress['percentage'] > 0 && $progress['percentage'] !== 100) {
+        if ($progress['percentage'] != 100 ) {
             if (sfwd_lms_has_access($enrolled_course_id, $atts['user_id'])) {
                 array_push($posts_in_courses, $enrolled_course_id);
             }
@@ -121,28 +124,7 @@ function cpe_user_in_progress_courses($atts) {
 
     $user_courses   =   $posts_in_courses;
 
-    /*$usermeta = get_user_meta($atts['user_id'], '_sfwd-quizzes', true);
-    $quiz_attempts_meta = empty($usermeta) ? false : $usermeta;*/
     $quiz_attempts = array();
-
-    /*if ( ! empty( $quiz_attempts_meta ) ) {
-
-        foreach ( $quiz_attempts_meta as $quiz_attempt ) {
-            $c = learndash_certificate_details( $quiz_attempt['quiz'], $atts['user_id'] );
-            $quiz_attempt['post'] = get_post( $quiz_attempt['quiz'] );
-            $quiz_attempt['percentage'] = ! empty( $quiz_attempt['percentage'] ) ? $quiz_attempt['percentage'] : ( ! empty( $quiz_attempt['count'] ) ? $quiz_attempt['score'] * 100 / $quiz_attempt['count'] : 0 );
-
-            if ( $atts['user_id'] == get_current_user_id() && ! empty( $c['certificateLink'] ) && ( ( isset( $quiz_attempt['percentage'] ) && $quiz_attempt['percentage'] >= $c['certificate_threshold'] * 100 ) ) ) {
-                $quiz_attempt['certificate'] = $c;
-            }
-
-            if ( !isset( $quiz_attempt['course'] ) )
-                $quiz_attempt['course'] = learndash_get_course_id( $quiz_attempt['quiz'] );
-            $course_id = intval( $quiz_attempt['course'] );
-
-            $quiz_attempts[$course_id][] = $quiz_attempt;
-        }
-    }*/
     
     $profile_pager = array();
     
