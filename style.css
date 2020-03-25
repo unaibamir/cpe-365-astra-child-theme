@@ -488,3 +488,10 @@ ul.user-dashboard-menu li a:hover {
 .learndash-wrapper #ld-profile .ld-item-list-item-preview .ld-status + .ld-status {
     margin-left: 10px;
 }
+
+.ld-status.ld-remove-credit {
+    background-color: #e21212;
+}
+.ld-status.ld-remove-credit a {
+    color: #FFF !important;
+}

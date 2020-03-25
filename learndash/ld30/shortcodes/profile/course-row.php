@@ -49,11 +49,26 @@ $course_class = apply_filters( 'learndash-course-row-class',
             
             <?php
             if( has_shortcode( $page_content, "cpe_user_in_progress_courses" ) ) {
+
                 $cpe_credits    = get_post_meta( $course_id, "_learndash_course_cpe_credits", true );
                 $cpe_term       = get_option( "cpe_term", "CPE" );
                 if( !empty($cpe_credits) ) {
-                    $bubble = '<div class="ld-status ld-status-complete ld-secondary-background">' . __( "{$cpe_term} Credits: " . $cpe_credits ) . '</div>';
+                    //$bubble = '<div class="ld-status ld-status-complete ld-secondary-background">' . __( "{$cpe_term} Credits: " . $cpe_credits ) . '</div>';
+                    $bubble = '<div class="ld-status ld-status-complete ld-secondary-background">' . sprintf( __( "%s Credits: %s", 'learndash'), $cpe_term, $cpe_credits ) . '</div>';
                     echo wp_kses_post( $bubble );
+
+                    $remove_link    = add_query_arg( array(
+                        'user_id'   =>  $user_id,
+                        'course_id' =>  $course_id,
+                        'action'    =>  'remove_user_credit',
+                        'credits'   =>  $cpe_credits,
+                        '_wpnonce'  =>  wp_create_nonce( 'remove_user_credit' )
+                    ), admin_url( 'admin-post.php' ) );
+
+                    $remove_credit  = '<div class="ld-status ld-remove-credit"><a href="'.$remove_link.'"> ' . __( "Remove", 'learndash') . ' </a></div>';
+
+                    //$remove_credit  = '<div class="ld-status ld-status-complete ld-secondary-background">' . sprintf( __( "Remove %s", 'learndash'), '') . '</div>';
+                    echo wp_kses_post( $remove_credit );
                 }
             }
             ?>

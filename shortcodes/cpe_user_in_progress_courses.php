@@ -144,8 +144,24 @@ function cpe_user_in_progress_courses($atts) {
     }
     
     $learndash_shortcode_used = true;
+
+    ob_start();
+
+    ?>
+    <div class="learndash-wrapper cpe_user_in-progress_courses">
+    <?php
+
+    if( isset($_GET["cpe_status"]) && $_GET["cpe_status"] == "course_removed" ) {
+
+        $alert = array(
+            'icon'    => 'alert',
+            'message' => __( 'Course credits has been removed.', 'learndash'),
+            'type'    => 'warning',
+        );
+        learndash_get_template_part('modules/alert.php', $alert, true);
+    }
     
-    return SFWD_LMS::get_template(
+    $courses =  SFWD_LMS::get_template(
         'profile',
         array(
             'user_id'           =>  $atts['user_id'],
@@ -156,4 +172,13 @@ function cpe_user_in_progress_courses($atts) {
             'profile_pager'     =>  $profile_pager
         )
     );
+
+    echo $courses;
+
+    ?>
+    </div>
+    <?php
+
+    $shortcode_html = ob_get_clean();
+    return $shortcode_html;
 }

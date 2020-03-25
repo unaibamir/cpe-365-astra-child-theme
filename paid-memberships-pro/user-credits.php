@@ -326,3 +326,29 @@ function check_log_user_credit() {
         }
     }
 }
+
+
+add_action( 'admin_post_remove_user_credit', 'remove_user_credit' );
+function remove_user_credit() {
+
+    global $wpdb;
+
+    $return_url = wp_get_referer();
+
+    if( wp_verify_nonce( $_GET['_wpnonce'], 'remove_user_credit' ) ) {
+
+        $deleted = $wpdb->delete( $wpdb->base_prefix . "user_credits", 
+            array(
+                'user_id'   =>  $_GET["user_id"],
+                'post_id'   =>  $_GET["course_id"],
+            )
+        );
+
+        if( $deleted ) {
+            $return_url = add_query_arg( 'cpe_status', 'course_removed', $return_url );
+        }
+    }
+
+    wp_safe_redirect( $return_url );
+    exit;
+}
