@@ -225,26 +225,85 @@ function cpe_user_credits_fields( $user ) {
     $user_used_credits  =   cpe_get_user_total_credits( $user_id );
     $user_used_credits  =   !empty($user_used_credits) ? $user_used_credits : 0;
 
+    $user_credits_list  =   cpe_get_user_credits( $user_id );
+
     ?>
     <br>
     <h3><?php _e("User ".$cpe_term." Credits", CPE_LANG); ?></h3>
 
     <table class="form-table">
-    <tr>
-        <th><label for="user_credits"><?php _e("Total Credits"); ?></label></th>
-        <td>
-            <input type="text" name="user_credits" id="user_credits" value="<?php echo $user_total_credits; ?>" class="regular-text" /><br />
-            <span class="description"><?php _e("User's total ".$cpe_term." credits."); ?></span>
-        </td>
-    </tr>
+        <tr>
+            <th><label for="user_credits"><?php _e("Total Credits"); ?></label></th>
+            <td>
+                <input type="text" name="user_credits" id="user_credits" value="<?php echo $user_total_credits; ?>" class="regular-text" /><br />
+                <span class="description"><?php _e("User's total ".$cpe_term." credits."); ?></span>
+            </td>
+        </tr>
 
-    <tr>
-        <th><label for="user_credits"><?php _e("Used Credits"); ?></label></th>
-        <td>
-            <strong><?php echo $user_used_credits; ?></strong><br>
-            <span class="description"><?php _e("User's used ".$cpe_term." credits."); ?></span>
-        </td>
-    </tr>
+        <tr>
+            <th><label for="user_credits"><?php _e("Used Credits"); ?></label></th>
+            <td>
+                <strong><?php echo $user_used_credits; ?></strong><br>
+                <span class="description"><?php _e("User's used ".$cpe_term." credits."); ?></span>
+            </td>
+        </tr>
+        
+        <?php
+        if( !empty($user_credits_list) ) {
+
+            ?>
+            <tr>
+                <th><label for="user_credits"><?php _e("Remove Individual Course Credit:"); ?></label></th>
+                <td>
+                    <ul style="margin:0;">
+                    <?php
+                    foreach ($user_credits_list as $user_credit) {
+
+                        $course_id      = $user_credit->post_id;
+                        
+                        $course_title   = get_the_title( $course_id );
+
+                        $progress = learndash_course_progress( array(
+                            'user_id'   => $user_id,
+                            'course_id' => $course_id,
+                            'array'     => true
+                        ) );
+
+                        $status = ( $progress['percentage'] == 100 ) ? 'Completed' : 'In Progress';
+
+                        $remove_link    = add_query_arg( array(
+                            'user_id'   =>  $user_id,
+                            'course_id' =>  $course_id,
+                            'action'    =>  'remove_user_credit',
+                            '_wpnonce'  =>  wp_create_nonce( 'remove_user_credit' )
+                        ), admin_url( 'admin-post.php' ) );
+
+                        ?>
+                        <li>
+                            <strong><?php echo $course_title; ?>:</strong> <?php echo __( 'Status: ' ) . $status; ?> 
+                            <a href="<?php echo esc_url( $remove_link ); ?>"><?php echo __( 'Remove' ); ?></a>
+                        </li>
+                        <?php
+                    }
+                    ?>
+                    </ul>
+
+                    <span class="description"><?php _e("This will remove user's course and credits. If course is in progress or completed, will be removed, use with caution. <strong>This cannot be undone.</strong>"); ?></span>
+                </td>
+            </tr>
+            <?php
+        }
+        ?>
+
+        <tr>
+            <th><label for="reset_credits"><?php _e("Reset Credits?"); ?></label></th>
+            <td>
+                <input type="checkbox" value="yes" name="reset_credits" id="reset_credits">
+                <br>
+                <span class="description"><?php _e("This will reset user's all credits. All courses in progress and completed will be removed, use with caution. <strong>This cannot be undone.</strong>"); ?></span>
+            </td>
+        </tr>
+
     </table>
 <?php }
 
@@ -253,10 +312,24 @@ add_action( 'personal_options_update', 'save_user_credits_profile_fields' );
 add_action( 'edit_user_profile_update', 'save_user_credits_profile_fields' );
 
 function save_user_credits_profile_fields( $user_id ) {
-    if ( !current_user_can( 'edit_user', $user_id ) ) { 
+
+    global $wpdb;
+
+    if ( !current_user_can( 'edit_user', $user_id ) ) {
         return false; 
     }
+
+    if( isset( $_POST["reset_credits"] ) && $_POST["reset_credits"] == "yes" ) {
+
+        $deleted = $wpdb->delete( $wpdb->base_prefix . "user_credits", 
+            array(
+                'user_id'   =>  $_POST["user_id"],
+            )
+        );
+    }
+
     update_user_meta( $user_id, 'cpe_credits', $_POST['user_credits'] );
+
 }
 
 
@@ -334,7 +407,7 @@ function remove_user_credit() {
     global $wpdb;
 
     $return_url = wp_get_referer();
-
+    
     if( wp_verify_nonce( $_GET['_wpnonce'], 'remove_user_credit' ) ) {
 
         $deleted = $wpdb->delete( $wpdb->base_prefix . "user_credits", 
@@ -345,10 +418,23 @@ function remove_user_credit() {
         );
 
         if( $deleted ) {
-            $return_url = add_query_arg( 'cpe_status', 'course_removed', $return_url );
+            if( is_admin() ) {
+                $return_url = add_query_arg( 'message', 'cpe_course_removed', $return_url );
+            } else {
+                $return_url = add_query_arg( 'cpe_status', 'course_removed', $return_url );
+            }
         }
     }
 
     wp_safe_redirect( $return_url );
     exit;
 }
+
+function cpe_admin_notice__error() {
+    if( isset($_GET["message"]) && $_GET["message"] == "cpe_course_removed" ) {
+        $class = 'notice notice-success is-dismissible';
+        $message = __( 'Course credit has been removed.', 'sample-text-domain' );
+        printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) );
+    }
+}
+add_action( 'admin_notices', 'cpe_admin_notice__error' );
