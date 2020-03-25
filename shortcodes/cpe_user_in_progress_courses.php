@@ -115,7 +115,7 @@ function cpe_user_in_progress_courses($atts) {
             'array'     => true
         ));
 
-        if ($progress['percentage'] != 100 ) {
+        if ($progress['percentage'] >= 0 && $progress['percentage'] != 100) {
             if (sfwd_lms_has_access($enrolled_course_id, $atts['user_id'])) {
                 array_push($posts_in_courses, $enrolled_course_id);
             }
