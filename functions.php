@@ -75,6 +75,23 @@ function child_enqueue_styles()
 }
 add_action('wp_enqueue_scripts', 'child_enqueue_styles', 15);
 
+/**
+ * Enqueue scripts
+ *
+ * @param string $handle Script name
+ * @param string $src Script url
+ * @param array $deps (optional) Array of script names on which this script depends
+ * @param string|bool $ver (optional) Script version (used for cache busting), set to null to disable
+ * @param bool $in_footer (optional) Whether to enqueue the script before </head> or before </body>
+ */
+function theme_name_scripts() {
+    wp_enqueue_style('cpe-365-css', CPE_ASSETS . '/admin/css/style.css', array(), ASSETS_VERSION, 'all');
+    wp_enqueue_script( 'cpe-365-admin-js', CPE_ASSETS . '/admin/js/script.js', array( 'jquery' ), ASSETS_VERSION, true );
+}
+add_action( 'admin_enqueue_scripts', 'theme_name_scripts' );
+
+
+
 add_filter("body_class", "woo_add_body_classes", 999, 2);
 function woo_add_body_classes($classes, $class)
 {

@@ -24,7 +24,6 @@ function cpe_credits_info_callback( $atts = array() ) {
         $remaining_credits        = 0;
     }
     
-    
     ob_start();
 
     ?>

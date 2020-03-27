@@ -1,0 +1,6 @@
+.update-user-credits + img {
+    position: relative;
+    top: 4px;
+    left: 5px;
+    display: none;
+}

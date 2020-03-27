@@ -119,16 +119,13 @@ function add_user_credits_memberships( $level_id, $user_id, $cancel_level ) {
     if( !empty($cancel_level) ) {
         update_user_meta( $user_id, "cpe_credits", '', '' );
     } else {
-        $cpe_credits = get_pmpro_membership_level_meta( $level_id, 'cpe_credits', true );
-        $unlimited_credits = get_pmpro_membership_level_meta( $level_id, 'cpe_unlimited_credits', true );
+        $cpe_credits        = get_pmpro_membership_level_meta( $level_id, 'cpe_credits', true );
+        $unlimited_credits  = get_pmpro_membership_level_meta( $level_id, 'cpe_unlimited_credits', true );
 
-        if( $unlimited_credits == "yes" ) {
+        if( !empty($unlimited_credits) && $unlimited_credits == "yes" ) {
             update_user_meta( $user_id, "cpe_credits", "unlimited", '' );
-        } else {
-            $old_credits = get_user_meta( $user_id, 'cpe_credits', true );
-            $old_credits = !empty($old_credits) ? $old_credits : 0;
-            $total_credits = $old_credits + $cpe_credits;
-            update_user_meta( $user_id, "cpe_credits", $total_credits, '' );
+        } else {            
+            update_user_meta( $user_id, "cpe_credits", $cpe_credits );
         }
     }
 
@@ -241,7 +238,10 @@ function cpe_user_credits_fields( $user ) {
         <tr>
             <th><label for="user_credits"><?php _e("Total Credits"); ?></label></th>
             <td>
-                <input type="text" name="user_credits" id="user_credits" value="<?php echo $user_total_credits; ?>" class="regular-text" /><br />
+                <input type="text" name="user_credits" id="user_credits" value="<?php echo $user_total_credits; ?>" class="medium-text" />
+                <a class="button button-primary update-user-credits" data-user_id="<?php echo $user_id; ?>" href="javascript:void(0);"><?php echo __( 'Update Credits' ); ?></a>
+                <img src="<?php echo admin_url( 'images/spinner.gif' ) ?>">
+                <br />
                 <span class="description"><?php _e("User's total ".$cpe_term." credits."); ?></span>
             </td>
         </tr>
@@ -334,8 +334,20 @@ function save_user_credits_profile_fields( $user_id ) {
         );
     }
 
-    update_user_meta( $user_id, 'cpe_credits', $_POST['user_credits'] );
+    /*$user_total_credits =   get_user_meta( $user_id, "cpe_credits", true );
+    if( $user_total_credits != $_POST['user_credits'] ) {
+        update_user_meta( $user_id, 'cpe_credits', $_POST['user_credits'] );
+    }*/
+}
 
+
+add_action( 'wp_ajax_update_user_credits', 'update_user_credits_ajax_callback' );
+function update_user_credits_ajax_callback() {
+    extract( $_POST );
+
+    update_user_meta( $user_id, 'cpe_credits', $user_credits );
+
+    wp_send_json_success( true );
 }
 
 
