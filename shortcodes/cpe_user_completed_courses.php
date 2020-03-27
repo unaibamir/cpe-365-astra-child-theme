@@ -98,10 +98,21 @@ function cpe_user_completed_courses($atts) {
     //$user_enrolled_courses      =   learndash_user_get_enrolled_courses($atts['user_id']);
     $user_courses               =   cpe_get_user_completed_courses_id($atts['user_id']);
     $user_enrolled_courses      = $user_courses;
-    
+
+    ob_start();
+
+    ?>
+    <div class="learndash-wrapper cpe_user_in-progress_courses">
+    <?php
 
     if (empty($user_enrolled_courses)) {
-        return $data;
+        $alert = array(
+            'icon'    => 'alert',
+            'message' => __( 'No Courses Available.', 'learndash'),
+            'type'    => 'warning',
+        );
+        
+        return learndash_get_template_part('modules/alert.php', $alert, false );
     }
 
     $user_courses   =   $user_enrolled_courses;
@@ -129,7 +140,7 @@ function cpe_user_completed_courses($atts) {
     
     $learndash_shortcode_used = true;
     
-    return SFWD_LMS::get_template(
+    $courses = SFWD_LMS::get_template(
         'profile',
         array(
             'user_id'           =>  $atts['user_id'],
@@ -140,4 +151,13 @@ function cpe_user_completed_courses($atts) {
             'profile_pager'     =>  $profile_pager
         )
     );
+
+    echo $courses;
+
+    ?>
+    </div>
+    <?php
+
+    $shortcode_html = ob_get_clean();
+    return $shortcode_html;
 }

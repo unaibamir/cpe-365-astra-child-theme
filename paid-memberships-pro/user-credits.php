@@ -108,6 +108,7 @@ add_action( "pmpro_after_change_membership_level", "add_user_credits_memberships
  * @param  int $cancel_level ID of old membership level
  */
 function add_user_credits_memberships( $level_id, $user_id, $cancel_level ) {
+    global $wpdb;
     // Add approval check if PMPro approval addon is active
     if ( class_exists( 'PMPro_Approvals' ) ) {
         if ( PMPro_Approvals::requiresApproval( $level_id ) && ! PMPro_Approvals::isApproved( $user_id, $level_id ) ) {
@@ -130,6 +131,12 @@ function add_user_credits_memberships( $level_id, $user_id, $cancel_level ) {
             update_user_meta( $user_id, "cpe_credits", $total_credits, '' );
         }
     }
+
+    $wpdb->delete( $wpdb->base_prefix . "user_credits", 
+        array(
+            'user_id'   =>  $user_id,
+        )
+    );
 
 }
 
@@ -163,8 +170,7 @@ function cpe_get_user_total_credits( $user_id ) {
     global $wpdb;
 
     $user_credit = $wpdb->get_col( "SELECT SUM(credit) FROM `{$wpdb->base_prefix}user_credits` WHERE user_id = {$user_id}" );
-
-    if( !empty($user_credit) ) {
+    if( !empty($user_credit[0]) ) {
         return $user_credit[0];
     } else {
         return 0;
@@ -416,6 +422,8 @@ function remove_user_credit() {
                 'post_id'   =>  $_GET["course_id"],
             )
         );
+
+        learndash_delete_course_progress( $_GET['course_id'], $_GET['user_id'] );
 
         if( $deleted ) {
             if( is_admin() ) {

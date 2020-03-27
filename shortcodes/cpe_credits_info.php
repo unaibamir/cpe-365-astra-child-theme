@@ -7,17 +7,23 @@ function cpe_credits_info_callback( $atts = array() ) {
         return '';
     }
 
-    $user_id 				= get_current_user_id();
-    $cpe_term       		= get_option( "cpe_term", "CPE" );
+    $user_id 				      = get_current_user_id();
+    $cpe_term             = get_option( "cpe_term", "CPE" );
     $user_total_credits 	= get_user_meta( $user_id, 'cpe_credits', true );
 
     if( empty($user_total_credits) ) {
-        return;
+        $user_total_credits = 0;
     }
 
-    $user_credits 			= cpe_get_user_credits( $user_id );
-    $user_used_credits      = cpe_get_user_total_credits( $user_id );
-    $remaining_credits      = max( $user_total_credits - $user_used_credits, 0);
+    $user_credits             = cpe_get_user_credits( $user_id );
+    $user_used_credits        = cpe_get_user_total_credits( $user_id );
+    
+    if( $user_total_credits && $user_used_credits )  {
+        $remaining_credits        = max( $user_total_credits - $user_used_credits, 0);
+    } else {
+        $remaining_credits        = 0;
+    }
+    
     
     ob_start();
 

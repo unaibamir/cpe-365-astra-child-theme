@@ -103,9 +103,20 @@ function cpe_user_in_progress_courses($atts) {
     $user_started_courses       =   cpe_user_started_courses( $atts['user_id'] );
     $user_enrolled_courses      =   $user_started_courses;
     
+    ob_start();
+
+    ?>
+    <div class="learndash-wrapper cpe_user_in-progress_courses">
+    <?php
 
     if (empty($user_enrolled_courses)) {
-        return $data;
+        $alert = array(
+            'icon'    => 'alert',
+            'message' => __( 'No Courses Available.', 'learndash'),
+            'type'    => 'warning',
+        );
+        
+        return learndash_get_template_part('modules/alert.php', $alert, false );
     }
 
     foreach ($user_enrolled_courses as $key => $enrolled_course_id) {
@@ -144,12 +155,6 @@ function cpe_user_in_progress_courses($atts) {
     }
     
     $learndash_shortcode_used = true;
-
-    ob_start();
-
-    ?>
-    <div class="learndash-wrapper cpe_user_in-progress_courses">
-    <?php
 
     if( isset($_GET["cpe_status"]) && $_GET["cpe_status"] == "course_removed" ) {
 
