@@ -286,7 +286,9 @@ function cpe_user_credits_fields( $user ) {
 
                         ?>
                         <li>
-                            <strong><?php echo $course_title; ?>:</strong> <?php echo __( 'Status: ' ) . $status; ?> 
+                            <strong><?php echo $course_title; ?></strong>, 
+                            <?php echo __( 'Status: ' ) . $status; ?>, 
+                            <?php echo __( 'Credits: ' ) . $user_credit->credit; ?> 
                             <a href="<?php echo esc_url( $remove_link ); ?>"><?php echo __( 'Remove' ); ?></a>
                         </li>
                         <?php
