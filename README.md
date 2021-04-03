@@ -17,10 +17,10 @@ Once you have configured this child theme, you will see new custom meta boxes un
 2) It displays a custom messages if the user does not have access to course/lesson or quizzes. 
 
 #### LearnDash Custom Shortcodes:
-[cpe_credits_info] This shortcode displays current status of user's CPE credits. How many credits the user have, how many are used and how many are remaining.
-[cpe_user_available_courses] This shortcode displays user available courses bases on user's CPE credits. It displays categories by default, and opening any of it will display its courses. 
-[cpe_user_in_progress_courses] This shortcode displays user's courses in progress based on CPE credits. The display method here is similar as above but it utilizes WordPress's transients to show courses quikly and avoid's LearnDash's core functions. 
-[cpe_user_profile] This shortcode provides an interface to users to customize their profiles. 
+- [cpe_credits_info] This shortcode displays current status of user's CPE credits. How many credits the user have, how many are used and how many are remaining.
+- [cpe_user_available_courses] This shortcode displays user available courses bases on user's CPE credits. It displays categories by default, and opening any of it will display its courses. 
+- [cpe_user_in_progress_courses] This shortcode displays user's courses in progress based on CPE credits. The display method here is similar as above but it utilizes WordPress's transients to show courses quikly and avoid's LearnDash's core functions. 
+- [cpe_user_profile] This shortcode provides an interface to users to customize their profiles. 
 
 
 #### Paid Memberships Pro Changes:
